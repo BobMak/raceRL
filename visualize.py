@@ -1,46 +1,20 @@
 import mujoco
-import mujoco_viewer
+# import mujoco_viewer
 import numpy as np
 import re
 
-MODEL_XML = """<?xml version="1.0" ?>
-<mujoco>
-    <compiler angle="degree" inertiafromgeom="true"/>
-
-    <option timestep="0.005" />
-    <default>
-        <joint armature="1" damping="1" limited="true"/>
-        <geom conaffinity="1" condim="1" contype="1" margin="0.001" material="geom" rgba="0.8 0.6 .4 1"/>
-        <motor ctrllimited="true" ctrlrange="-.4 .4"/>
-    </default>
-    <option integrator="RK4" iterations="50" solver="PGS" timestep="0.003">
-        <!-- <flags solverstat="enable" energy="enable"/>-->
-    </option>
-    <size nkey="5" nuser_geom="1"/>
-    <asset>
-        <texture builtin="gradient" height="100" rgb1=".4 .5 .6" rgb2="0 0 0" type="skybox" width="100"/>
-        <!-- <texture builtin="gradient" height="100" rgb1="1 1 1" rgb2="0 0 0" type="skybox" width="100"/>-->
-        <texture builtin="flat" height="1278" mark="cross" markrgb="1 1 1" name="texgeom" random="0.01" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" type="cube" width="127"/>
-        <material name="MatPlane" reflectance="0.5" shininess="1" specular="1" texrepeat="60 60"/>
-        <material name="geom" texture="texgeom" texuniform="true"/>
-    </asset>
-    <worldbody>
-        <geom condim="3" friction="1 .1 .1" material="MatPlane" name="floor" pos="0 0 0" rgba="0.8 0.9 0.8 1" size="20 20 0.125" type="plane" contype="1" conaffinity="255"/>
-        <camera euler="0 0 0" fovy="40" name="rgb" pos="0 0 2.5"></camera>
-        SPHEROS_
-    </worldbody>
-    <actuator>
-        ACTUATORS_
-    </actuator>
-    <tendon>
-        TENDONS_
-    </tendon>
-</mujoco>
-"""
+with open("envxmls/racinghums.xml", "r") as f:
+    MODEL_XML = f.read()
 
 # Load the original XML
 env='humanoid'
-path = f"/Users/jacobadamczyk/miniconda3/envs/rlenv10/lib/python3.10/site-packages/gymnasium/envs/mujoco/assets/{env}.xml"
+#path = f"/Users/jacobadamczyk/miniconda3/envs/rlenv10/lib/python3.10/site-packages/gymnasium/envs/mujoco/assets/{env}.xml"
+# get conda env path
+import os
+# path = os.path.join(os.environ['CONDA_PREFIX'], 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
+path = os.path.join(os.environ['CONDA_PREFIX'], 'Lib', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
+path = os.path.abspath(path)
+
 with open(path, "r") as f:
     xml_content = f.read()
 # insert all body elements from humanoid into MODEL_XML:
@@ -66,11 +40,7 @@ colors = [
 
 
 for n_agent in range(N_AGENTS):
-    # Replace each body tag name with appended agent number:
-    # for ex.         <body name="torso" pos="0 0 1.4">
-    # becomes         <body name="torso_0" pos="0 0 1.4">:
-    # print(n_agent)
-    
+    # copy humanoid geometry, actuators, and tendons N_AGENTS times:
     new_agent_xml = re.sub(r'name="', f'name="{n_agent}_', xml)
     # properly replace unique geom tags using same sub logic:
     
@@ -78,10 +48,6 @@ for n_agent in range(N_AGENTS):
                            f'<geom contype="{n_agent+1}" conaffinity="0" rgba="{colors[n_agent % len(colors)]}"',
                            new_agent_xml
     )
-    # Copy the actuators, renaming  the joint properly
-    # loop through joints and get proper name, relabelling 
-    # e.g.     <motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_4" gear="150"/>
-    # becomes  <motor ctrllimited="true" ctrlrange="-1.0 1.0" joint="hip_4_0" gear="150"/>
     new_actuator_xml = re.sub(r'joint="', f'joint="{n_agent}_', actuator_match)
     new_actuator_xml = re.sub(r'name="', f'name="{n_agent}_', new_actuator_xml)
 
@@ -113,12 +79,13 @@ from stable_baselines3 import SAC
 model = SAC.load("humanoid")
 model2 = SAC.load("humanoid")
 
-
-env_name='Humanoid-v5'
-xml_path='/Users/jacobadamczyk/Documents/Github/raceRL/tmp.xml'
-env = gym.make(env_name, xml_file=xml_path, render_mode='human')
+env_name='RaceingHumanoids-v5'
+#xml_path='/Users/jacobadamczyk/Documents/Github/raceRL/tmp.xml'
+import customHumEnv
+tmp_path = os.path.join(os.getcwd(), 'tmp.xml')
+env = gym.make(env_name, n_agents=2, xml_file=tmp_path, render_mode='human')
 # exit()
-# action_dim = env.action_space.shape[0]
+
 obs, info = env.reset()
 
 for _ in range(10000):
