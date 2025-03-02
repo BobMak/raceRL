@@ -1,0 +1,179 @@
+<?xml version="1.0" ?>
+<mujoco>
+    <option timestep="0.005" />
+    <asset>
+        <texture builtin="gradient" height="100" rgb1=".4 .5 .6" rgb2="0 0 0" type="skybox" width="100"/>
+        <!-- <texture builtin="gradient" height="100" rgb1="1 1 1" rgb2="0 0 0" type="skybox" width="100"/>-->
+        <texture builtin="flat" height="1278" mark="cross" markrgb="1 1 1" name="texgeom" random="0.01" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" type="cube" width="127"/>
+        <material name="MatPlane" reflectance="0.5" shininess="1" specular="1" texrepeat="60 60"/>
+        <material name="geom" texture="texgeom" texuniform="true"/>
+    </asset>
+    <worldbody>
+        <geom condim="3" friction="1 .1 .1" material="MatPlane" name="floor" pos="0 0 0" rgba="0.8 0.9 0.8 1" size="20 20 0.125" type="plane" contype="1" conaffinity="255"/>
+        <camera euler="0 0 0" fovy="40" name="rgb" pos="0 0 2.5"></camera>
+        <body name="0_torso" pos="0 0 1.4">
+            <camera name="0_track" mode="trackcom" pos="0 -4 0" xyaxes="1 0 0 0 0 1"/>
+            <joint armature="0" damping="0" limited="false" name="0_root" pos="0 0 0" stiffness="0" type="free"/>
+            <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0 -.07 0 0 .07 0" name="0_torso1" size="0.07" type="capsule"/>
+            <geom contype="1" conaffinity="0" rgba="1 0 0 1" name="0_head" pos="0 0 .19" size=".09" type="sphere" user="258"/>
+            <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="-.01 -.06 -.12 -.01 .06 -.12" name="0_uwaist" size="0.06" type="capsule"/>
+            <body name="0_lwaist" pos="-.01 0 -0.260" quat="1.000 0 -0.002 0">
+                <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0 -.06 0 0 .06 0" name="0_lwaist" size="0.06" type="capsule"/>
+                <joint armature="0.02" axis="0 0 1" damping="5" name="0_abdomen_z" pos="0 0 0.065" range="-45 45" stiffness="20" type="hinge"/>
+                <joint armature="0.02" axis="0 1 0" damping="5" name="0_abdomen_y" pos="0 0 0.065" range="-75 30" stiffness="10" type="hinge"/>
+                <body name="0_pelvis" pos="0 0 -0.165" quat="1.000 0 -0.002 0">
+                    <joint armature="0.02" axis="1 0 0" damping="5" name="0_abdomen_x" pos="0 0 0.1" range="-35 35" stiffness="10" type="hinge"/>
+                    <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="-.02 -.07 0 -.02 .07 0" name="0_butt" size="0.09" type="capsule"/>
+                    <body name="0_right_thigh" pos="0 -0.1 -0.04">
+                        <joint armature="0.01" axis="1 0 0" damping="5" name="0_right_hip_x" pos="0 0 0" range="-25 5" stiffness="10" type="hinge"/>
+                        <joint armature="0.01" axis="0 0 1" damping="5" name="0_right_hip_z" pos="0 0 0" range="-60 35" stiffness="10" type="hinge"/>
+                        <joint armature="0.0080" axis="0 1 0" damping="5" name="0_right_hip_y" pos="0 0 0" range="-110 20" stiffness="20" type="hinge"/>
+                        <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0 0 0 0 0.01 -.34" name="0_right_thigh1" size="0.06" type="capsule"/>
+                        <body name="0_right_shin" pos="0 0.01 -0.403">
+                            <joint armature="0.0060" axis="0 -1 0" name="0_right_knee" pos="0 0 .02" range="-160 -2" type="hinge"/>
+                            <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0 0 0 0 0 -.3" name="0_right_shin1" size="0.049" type="capsule"/>
+                            <body name="0_right_foot" pos="0 0 -0.45">
+                                <geom contype="1" conaffinity="0" rgba="1 0 0 1" name="0_right_foot" pos="0 0 0.1" size="0.075" type="sphere" user="0"/>
+                            </body>
+                        </body>
+                    </body>
+                    <body name="0_left_thigh" pos="0 0.1 -0.04">
+                        <joint armature="0.01" axis="-1 0 0" damping="5" name="0_left_hip_x" pos="0 0 0" range="-25 5" stiffness="10" type="hinge"/>
+                        <joint armature="0.01" axis="0 0 -1" damping="5" name="0_left_hip_z" pos="0 0 0" range="-60 35" stiffness="10" type="hinge"/>
+                        <joint armature="0.01" axis="0 1 0" damping="5" name="0_left_hip_y" pos="0 0 0" range="-110 20" stiffness="20" type="hinge"/>
+                        <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0 0 0 0 -0.01 -.34" name="0_left_thigh1" size="0.06" type="capsule"/>
+                        <body name="0_left_shin" pos="0 -0.01 -0.403">
+                            <joint armature="0.0060" axis="0 -1 0" name="0_left_knee" pos="0 0 .02" range="-160 -2" stiffness="1" type="hinge"/>
+                            <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0 0 0 0 0 -.3" name="0_left_shin1" size="0.049" type="capsule"/>
+                            <body name="0_left_foot" pos="0 0 -0.45">
+                                <geom contype="1" conaffinity="0" rgba="1 0 0 1" name="0_left_foot" type="sphere" size="0.075" pos="0 0 0.1" user="0" />
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+            <body name="0_right_upper_arm" pos="0 -0.17 0.06">
+                <joint armature="0.0068" axis="2 1 1" name="0_right_shoulder1" pos="0 0 0" range="-85 60" stiffness="1" type="hinge"/>
+                <joint armature="0.0051" axis="0 -1 1" name="0_right_shoulder2" pos="0 0 0" range="-85 60" stiffness="1" type="hinge"/>
+                <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0 0 0 .16 -.16 -.16" name="0_right_uarm1" size="0.04 0.16" type="capsule"/>
+                <body name="0_right_lower_arm" pos=".18 -.18 -.18">
+                    <joint armature="0.0028" axis="0 -1 1" name="0_right_elbow" pos="0 0 0" range="-90 50" stiffness="0" type="hinge"/>
+                    <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0.01 0.01 0.01 .17 .17 .17" name="0_right_larm" size="0.031" type="capsule"/>
+                    <geom contype="1" conaffinity="0" rgba="1 0 0 1" name="0_right_hand" pos=".18 .18 .18" size="0.04" type="sphere"/>
+                    <camera pos="0 0 0"/>
+                </body>
+            </body>
+            <body name="0_left_upper_arm" pos="0 0.17 0.06">
+                <joint armature="0.0068" axis="2 -1 1" name="0_left_shoulder1" pos="0 0 0" range="-60 85" stiffness="1" type="hinge"/>
+                <joint armature="0.0051" axis="0 1 1" name="0_left_shoulder2" pos="0 0 0" range="-60 85" stiffness="1" type="hinge"/>
+                <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0 0 0 .16 .16 -.16" name="0_left_uarm1" size="0.04 0.16" type="capsule"/>
+                <body name="0_left_lower_arm" pos=".18 .18 -.18">
+                    <joint armature="0.0028" axis="0 -1 -1" name="0_left_elbow" pos="0 0 0" range="-90 50" stiffness="0" type="hinge"/>
+                    <geom contype="1" conaffinity="0" rgba="1 0 0 1" fromto="0.01 -0.01 0.01 .17 -.17 .17" name="0_left_larm" size="0.031" type="capsule"/>
+                    <geom contype="1" conaffinity="0" rgba="1 0 0 1" name="0_left_hand" pos=".18 -.18 .18" size="0.04" type="sphere"/>
+                </body>
+            </body>
+        </body><body name="1_torso" pos="0 0 1.4">
+            <camera name="1_track" mode="trackcom" pos="0 -4 0" xyaxes="1 0 0 0 0 1"/>
+            <joint armature="0" damping="0" limited="false" name="1_root" pos="0 0 0" stiffness="0" type="free"/>
+            <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0 -.07 0 0 .07 0" name="1_torso1" size="0.07" type="capsule"/>
+            <geom contype="2" conaffinity="0" rgba="0 1 0 1" name="1_head" pos="0 0 .19" size=".09" type="sphere" user="258"/>
+            <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="-.01 -.06 -.12 -.01 .06 -.12" name="1_uwaist" size="0.06" type="capsule"/>
+            <body name="1_lwaist" pos="-.01 0 -0.260" quat="1.000 0 -0.002 0">
+                <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0 -.06 0 0 .06 0" name="1_lwaist" size="0.06" type="capsule"/>
+                <joint armature="0.02" axis="0 0 1" damping="5" name="1_abdomen_z" pos="0 0 0.065" range="-45 45" stiffness="20" type="hinge"/>
+                <joint armature="0.02" axis="0 1 0" damping="5" name="1_abdomen_y" pos="0 0 0.065" range="-75 30" stiffness="10" type="hinge"/>
+                <body name="1_pelvis" pos="0 0 -0.165" quat="1.000 0 -0.002 0">
+                    <joint armature="0.02" axis="1 0 0" damping="5" name="1_abdomen_x" pos="0 0 0.1" range="-35 35" stiffness="10" type="hinge"/>
+                    <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="-.02 -.07 0 -.02 .07 0" name="1_butt" size="0.09" type="capsule"/>
+                    <body name="1_right_thigh" pos="0 -0.1 -0.04">
+                        <joint armature="0.01" axis="1 0 0" damping="5" name="1_right_hip_x" pos="0 0 0" range="-25 5" stiffness="10" type="hinge"/>
+                        <joint armature="0.01" axis="0 0 1" damping="5" name="1_right_hip_z" pos="0 0 0" range="-60 35" stiffness="10" type="hinge"/>
+                        <joint armature="0.0080" axis="0 1 0" damping="5" name="1_right_hip_y" pos="0 0 0" range="-110 20" stiffness="20" type="hinge"/>
+                        <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0 0 0 0 0.01 -.34" name="1_right_thigh1" size="0.06" type="capsule"/>
+                        <body name="1_right_shin" pos="0 0.01 -0.403">
+                            <joint armature="0.0060" axis="0 -1 0" name="1_right_knee" pos="0 0 .02" range="-160 -2" type="hinge"/>
+                            <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0 0 0 0 0 -.3" name="1_right_shin1" size="0.049" type="capsule"/>
+                            <body name="1_right_foot" pos="0 0 -0.45">
+                                <geom contype="2" conaffinity="0" rgba="0 1 0 1" name="1_right_foot" pos="0 0 0.1" size="0.075" type="sphere" user="0"/>
+                            </body>
+                        </body>
+                    </body>
+                    <body name="1_left_thigh" pos="0 0.1 -0.04">
+                        <joint armature="0.01" axis="-1 0 0" damping="5" name="1_left_hip_x" pos="0 0 0" range="-25 5" stiffness="10" type="hinge"/>
+                        <joint armature="0.01" axis="0 0 -1" damping="5" name="1_left_hip_z" pos="0 0 0" range="-60 35" stiffness="10" type="hinge"/>
+                        <joint armature="0.01" axis="0 1 0" damping="5" name="1_left_hip_y" pos="0 0 0" range="-110 20" stiffness="20" type="hinge"/>
+                        <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0 0 0 0 -0.01 -.34" name="1_left_thigh1" size="0.06" type="capsule"/>
+                        <body name="1_left_shin" pos="0 -0.01 -0.403">
+                            <joint armature="0.0060" axis="0 -1 0" name="1_left_knee" pos="0 0 .02" range="-160 -2" stiffness="1" type="hinge"/>
+                            <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0 0 0 0 0 -.3" name="1_left_shin1" size="0.049" type="capsule"/>
+                            <body name="1_left_foot" pos="0 0 -0.45">
+                                <geom contype="2" conaffinity="0" rgba="0 1 0 1" name="1_left_foot" type="sphere" size="0.075" pos="0 0 0.1" user="0" />
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+            <body name="1_right_upper_arm" pos="0 -0.17 0.06">
+                <joint armature="0.0068" axis="2 1 1" name="1_right_shoulder1" pos="0 0 0" range="-85 60" stiffness="1" type="hinge"/>
+                <joint armature="0.0051" axis="0 -1 1" name="1_right_shoulder2" pos="0 0 0" range="-85 60" stiffness="1" type="hinge"/>
+                <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0 0 0 .16 -.16 -.16" name="1_right_uarm1" size="0.04 0.16" type="capsule"/>
+                <body name="1_right_lower_arm" pos=".18 -.18 -.18">
+                    <joint armature="0.0028" axis="0 -1 1" name="1_right_elbow" pos="0 0 0" range="-90 50" stiffness="0" type="hinge"/>
+                    <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0.01 0.01 0.01 .17 .17 .17" name="1_right_larm" size="0.031" type="capsule"/>
+                    <geom contype="2" conaffinity="0" rgba="0 1 0 1" name="1_right_hand" pos=".18 .18 .18" size="0.04" type="sphere"/>
+                    <camera pos="0 0 0"/>
+                </body>
+            </body>
+            <body name="1_left_upper_arm" pos="0 0.17 0.06">
+                <joint armature="0.0068" axis="2 -1 1" name="1_left_shoulder1" pos="0 0 0" range="-60 85" stiffness="1" type="hinge"/>
+                <joint armature="0.0051" axis="0 1 1" name="1_left_shoulder2" pos="0 0 0" range="-60 85" stiffness="1" type="hinge"/>
+                <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0 0 0 .16 .16 -.16" name="1_left_uarm1" size="0.04 0.16" type="capsule"/>
+                <body name="1_left_lower_arm" pos=".18 .18 -.18">
+                    <joint armature="0.0028" axis="0 -1 -1" name="1_left_elbow" pos="0 0 0" range="-90 50" stiffness="0" type="hinge"/>
+                    <geom contype="2" conaffinity="0" rgba="0 1 0 1" fromto="0.01 -0.01 0.01 .17 -.17 .17" name="1_left_larm" size="0.031" type="capsule"/>
+                    <geom contype="2" conaffinity="0" rgba="0 1 0 1" name="1_left_hand" pos=".18 -.18 .18" size="0.04" type="sphere"/>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+    <actuator>
+        
+        <motor gear="100" joint="0_abdomen_y" name="0_abdomen_y"/>
+        <motor gear="100" joint="0_abdomen_z" name="0_abdomen_z"/>
+        <motor gear="100" joint="0_abdomen_x" name="0_abdomen_x"/>
+        <motor gear="100" joint="0_right_hip_x" name="0_right_hip_x"/>
+        <motor gear="100" joint="0_right_hip_z" name="0_right_hip_z"/>
+        <motor gear="300" joint="0_right_hip_y" name="0_right_hip_y"/>
+        <motor gear="200" joint="0_right_knee" name="0_right_knee"/>
+        <motor gear="100" joint="0_left_hip_x" name="0_left_hip_x"/>
+        <motor gear="100" joint="0_left_hip_z" name="0_left_hip_z"/>
+        <motor gear="300" joint="0_left_hip_y" name="0_left_hip_y"/>
+        <motor gear="200" joint="0_left_knee" name="0_left_knee"/>
+        <motor gear="25" joint="0_right_shoulder1" name="0_right_shoulder1"/>
+        <motor gear="25" joint="0_right_shoulder2" name="0_right_shoulder2"/>
+        <motor gear="25" joint="0_right_elbow" name="0_right_elbow"/>
+        <motor gear="25" joint="0_left_shoulder1" name="0_left_shoulder1"/>
+        <motor gear="25" joint="0_left_shoulder2" name="0_left_shoulder2"/>
+        <motor gear="25" joint="0_left_elbow" name="0_left_elbow"/>
+    
+        <motor gear="100" joint="1_abdomen_y" name="1_abdomen_y"/>
+        <motor gear="100" joint="1_abdomen_z" name="1_abdomen_z"/>
+        <motor gear="100" joint="1_abdomen_x" name="1_abdomen_x"/>
+        <motor gear="100" joint="1_right_hip_x" name="1_right_hip_x"/>
+        <motor gear="100" joint="1_right_hip_z" name="1_right_hip_z"/>
+        <motor gear="300" joint="1_right_hip_y" name="1_right_hip_y"/>
+        <motor gear="200" joint="1_right_knee" name="1_right_knee"/>
+        <motor gear="100" joint="1_left_hip_x" name="1_left_hip_x"/>
+        <motor gear="100" joint="1_left_hip_z" name="1_left_hip_z"/>
+        <motor gear="300" joint="1_left_hip_y" name="1_left_hip_y"/>
+        <motor gear="200" joint="1_left_knee" name="1_left_knee"/>
+        <motor gear="25" joint="1_right_shoulder1" name="1_right_shoulder1"/>
+        <motor gear="25" joint="1_right_shoulder2" name="1_right_shoulder2"/>
+        <motor gear="25" joint="1_right_elbow" name="1_right_elbow"/>
+        <motor gear="25" joint="1_left_shoulder1" name="1_left_shoulder1"/>
+        <motor gear="25" joint="1_left_shoulder2" name="1_left_shoulder2"/>
+        <motor gear="25" joint="1_left_elbow" name="1_left_elbow"/>
+    
+    </actuator>
+</mujoco>

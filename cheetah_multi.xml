@@ -1,0 +1,12 @@
+<mujoco model="two_halfcheetahs">
+    <compiler angle="radian" inertiafromgeom="true"/>
+    <option timestep="0.002"/>
+    <worldbody>
+        <body name="cheetah1" pos="-2 0 0">
+            <include file="/Users/jacobadamczyk/miniconda3/envs/rlenv10/lib/python3.10/site-packages/gymnasium/envs/mujoco/assets/half_cheetah.xml"/>
+        </body>
+        <body name="cheetah2" pos="2 0 0">
+            <include file="/Users/jacobadamczyk/miniconda3/envs/rlenv10/lib/python3.10/site-packages/gymnasium/envs/mujoco/assets/half_cheetah.xml"/>
+        </body>
+    </worldbody>
+</mujoco>
