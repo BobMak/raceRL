@@ -12,9 +12,9 @@ env='humanoid'
 # get conda env path
 import os
 # path = os.path.join(os.environ['CONDA_PREFIX'], 'envs', 'rlenv10', 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
-path = os.path.join(os.environ['CONDA_PREFIX'], 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
+# path = os.path.join(os.environ['CONDA_PREFIX'], 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
 
-# path = os.path.join(os.environ['CONDA_PREFIX'], 'Lib', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
+path = os.path.join(os.environ['CONDA_PREFIX'], 'Lib', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
 path = os.path.abspath(path)
 import sys
 # sys.path.append('/')
