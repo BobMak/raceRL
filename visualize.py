@@ -1,7 +1,10 @@
 import mujoco
-# import mujoco_viewer
 import numpy as np
 import re
+import gymnasium as gym
+from stable_baselines3 import SAC
+from color_utils import rgba_color_list
+import os
 
 with open("envxmls/racinghums.xml", "r") as f:
     MODEL_XML = f.read()
@@ -10,17 +13,15 @@ with open("envxmls/racinghums.xml", "r") as f:
 env='humanoid'
 #path = f"/Users/jacobadamczyk/miniconda3/envs/rlenv10/lib/python3.10/site-packages/gymnasium/envs/mujoco/assets/{env}.xml"
 # get conda env path
-import os
-path = os.path.join(os.environ['CONDA_PREFIX'], 'envs', 'rlenv10', 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
+# path = os.path.join(os.environ['CONDA_PREFIX'], 'envs', 'rlenv10', 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
 path = os.path.join(os.environ['CONDA_PREFIX'], 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
 
 # path = os.path.join(os.environ['CONDA_PREFIX'], 'Lib', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
 path = os.path.abspath(path)
-import sys
-# sys.path.append('/')
 
 with open(path, "r") as f:
     xml_content = f.read()
+    
 # insert all body elements from humanoid into MODEL_XML:
 body_match = re.search(r"<body(.*)>(.*)</body>", xml_content, re.DOTALL)
 big_xml_string = ""
@@ -38,14 +39,8 @@ else:
 big_tendon_xml = ""
 
 N_AGENTS = 5
-colors = [
-    "1 0 0 1",  # Red
-    "0 1 0 1",  # Green
-    "0 0 1 1",  # Blue
-    "1 1 0 1",  # Yellow
-    "1 0 1 1",  # Magenta
-][:N_AGENTS]
-
+# use an mpl color cycle to color the agents:
+colors = rgba_color_list(N_AGENTS)
 
 for n_agent in range(N_AGENTS):
     # copy humanoid geometry, actuators, and tendons N_AGENTS times:
@@ -69,7 +64,7 @@ for n_agent in range(N_AGENTS):
     big_tendon_xml += new_tendon_xml
     
 
-xml_content = MODEL_XML.replace("SPHEROS_", big_xml_string)
+xml_content = MODEL_XML.replace("BODIES_", big_xml_string)
 xml_content = xml_content.replace("ACTUATORS_", big_actuator_xml)
 xml_content = xml_content.replace("TENDONS_", big_tendon_xml)
 
@@ -81,16 +76,10 @@ with open("tmp.xml", "w") as f:
 model = mujoco.MjModel.from_xml_string(xml_content)
 data = mujoco.MjData(model)
 
-# Simulation loop
-import gymnasium as gym
-from stable_baselines3 import SAC
-# model = SAC.load("humanoid-v5-sac-simple", custom_objects=
 model = SAC.load("humanoid-v5-sac-simple")
-model2 = SAC.load("humanoid-v5-sac-simple")
 
-env_name='RaceingHumanoids-v5'
+env_name='RacingHumanoids-v5'
 import customHumEnv
-#xml_path='/Users/jacobadamczyk/Documents/Github/raceRL/tmp.xml'
 tmp_path = os.path.join(os.getcwd(), 'tmp.xml')
 env = gym.make(env_name, n_agents=N_AGENTS, xml_file=tmp_path, render_mode='human')
 # exit()
@@ -98,7 +87,6 @@ agents = [model for _ in range(N_AGENTS)]
 obs, info = env.reset()
 obs_len = obs.shape[0]
 for _ in range(10000):
-    # normal rl rendering / steps:
     # combine actions from each agent:
     actions = []
     for n_agent, agent in enumerate(agents):
@@ -110,6 +98,3 @@ for _ in range(10000):
     obs, reward, term, trunc, info = env.step(action)
     env.render()
     
-# viewer.close()
-
-print("Data collection complete. Saved to two_humanoids_random_data.npy")
