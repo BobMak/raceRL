@@ -11,7 +11,7 @@ env='humanoid'
 #path = f"/Users/jacobadamczyk/miniconda3/envs/rlenv10/lib/python3.10/site-packages/gymnasium/envs/mujoco/assets/{env}.xml"
 # get conda env path
 import os
-# path = os.path.join(os.environ['CONDA_PREFIX'], 'envs', 'rlenv10', 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
+path = os.path.join(os.environ['CONDA_PREFIX'], 'envs', 'rlenv10', 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
 path = os.path.join(os.environ['CONDA_PREFIX'], 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
 
 # path = os.path.join(os.environ['CONDA_PREFIX'], 'Lib', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
@@ -37,7 +37,7 @@ else:
     tendon_match = ""
 big_tendon_xml = ""
 
-N_AGENTS = 2
+N_AGENTS = 5
 colors = [
     "1 0 0 1",  # Red
     "0 1 0 1",  # Green
@@ -85,28 +85,28 @@ data = mujoco.MjData(model)
 import gymnasium as gym
 from stable_baselines3 import SAC
 # model = SAC.load("humanoid-v5-sac-simple", custom_objects=
-model = SAC.load("humanoid")
-model2 = SAC.load("humanoid")
+model = SAC.load("humanoid-v5-sac-simple")
+model2 = SAC.load("humanoid-v5-sac-simple")
 
 env_name='RaceingHumanoids-v5'
-#xml_path='/Users/jacobadamczyk/Documents/Github/raceRL/tmp.xml'
 import customHumEnv
+#xml_path='/Users/jacobadamczyk/Documents/Github/raceRL/tmp.xml'
 tmp_path = os.path.join(os.getcwd(), 'tmp.xml')
 env = gym.make(env_name, n_agents=N_AGENTS, xml_file=tmp_path, render_mode='human')
 # exit()
-agents = [model, model2]
+agents = [model for _ in range(N_AGENTS)]
 obs, info = env.reset()
 obs_len = obs.shape[0]
 for _ in range(10000):
     # normal rl rendering / steps:
     # combine actions from each agent:
     actions = []
-    # for n_agent, agent in enumerate(agents):
-    #     # action, _ = agent.predict(obs[n_agent*obs_len//N_AGENTS:(n_agent+1)*obs_len//N_AGENTS])
-        # actions.append(action)
-    action = env.action_space.sample()
+    for n_agent, agent in enumerate(agents):
+        action, _ = agent.predict(obs[n_agent*obs_len//N_AGENTS:(n_agent+1)*obs_len//N_AGENTS])
+        actions.append(action)
+    # action = env.action_space.sample()
 
-    # action = np.concatenate(actions)
+    action = np.concatenate(actions)
     obs, reward, term, trunc, info = env.step(action)
     env.render()
     
