@@ -7,8 +7,11 @@ from color_utils import rgba_color_list
 import os
 import customHumEnv
 import customHalfCheetahEnv
+import customAntEnv
+import customSwimmerEnv
+import customHopperEnv
 
-env='humanoid'
+env='hopper'
 with open(f"envxmls/racing_{env}s.xml", "r") as f:
     MODEL_XML = f.read()
 
@@ -39,7 +42,7 @@ else:
     tendon_match = ""
 big_tendon_xml = ""
 
-N_AGENTS = 20
+N_AGENTS = 5
 # use an mpl color cycle to color the agents:
 colors = rgba_color_list(N_AGENTS)
 
@@ -75,15 +78,12 @@ with open("tmp.xml", "w") as f:
 model = mujoco.MjModel.from_xml_string(xml_content)
 data = mujoco.MjData(model)
 
-
 model = SAC.load(env)
 # capitalize first letter:
 env_name = f'Racing{env.capitalize()}s-v5'
 tmp_path = os.path.join(os.getcwd(), 'tmp.xml')
 
 env = gym.make(env_name, n_agents=N_AGENTS, xml_file=tmp_path, render_mode='human')
-
-# exit()
 agents = [model for _ in range(N_AGENTS)]
 obs, info = env.reset()
 obs_len = obs.shape[0]

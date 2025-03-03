@@ -2,14 +2,9 @@
 
 select two agents. Watch them go
 
-https://github.com/niart/triplesumo
-https://robotics.farama.org/envs/MaMuJoCo/index.html
-
-pip install gymnasium-robotics[mujoco-py]
-
 # TODO:
-- [ ] Update to gymnasium-robotics v1 (gymnasium 1)
-- [ ] add 
 - [ ] add several fun camera positions 
-  - [ ] fpv
-  - [ ] motorsports-like camera position
+- [ ] fpv
+- [ ] motorsports-like camera position
+- [ ] Double check which env xml's need v5 appended (in mujoco assets, some envs have up-to-date xmls, some don't)
+- [ ] Fix swimmers
