@@ -5,12 +5,13 @@ import gymnasium as gym
 from stable_baselines3 import SAC
 from color_utils import rgba_color_list
 import os
+import customHumEnv
+import customHalfCheetahEnv
 
-with open("envxmls/racinghums.xml", "r") as f:
+env='humanoid'
+with open(f"envxmls/racing_{env}s.xml", "r") as f:
     MODEL_XML = f.read()
 
-# Load the original XML
-env='humanoid'
 #path = f"/Users/jacobadamczyk/miniconda3/envs/rlenv10/lib/python3.10/site-packages/gymnasium/envs/mujoco/assets/{env}.xml"
 # get conda env path
 # path = os.path.join(os.environ['CONDA_PREFIX'], 'envs', 'rlenv10', 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
@@ -21,7 +22,7 @@ path = os.path.abspath(path)
 
 with open(path, "r") as f:
     xml_content = f.read()
-    
+
 # insert all body elements from humanoid into MODEL_XML:
 body_match = re.search(r"<body(.*)>(.*)</body>", xml_content, re.DOTALL)
 big_xml_string = ""
@@ -38,7 +39,7 @@ else:
     tendon_match = ""
 big_tendon_xml = ""
 
-N_AGENTS = 5
+N_AGENTS = 20
 # use an mpl color cycle to color the agents:
 colors = rgba_color_list(N_AGENTS)
 
@@ -46,8 +47,8 @@ for n_agent in range(N_AGENTS):
     # copy humanoid geometry, actuators, and tendons N_AGENTS times:
     new_agent_xml = re.sub(r'name="', f'name="{n_agent}_', xml)
     
-    # properly replace unique geom tags using same sub logic:
-    
+    # Remove any existing rgba attribute first
+    new_agent_xml = re.sub(r'rgba="[^"]*"', '', new_agent_xml)
     new_agent_xml = re.sub(r'<geom', 
                            f'<geom contype="{n_agent+1}" conaffinity="0" rgba="{colors[n_agent % len(colors)]}"',
                            new_agent_xml
@@ -58,11 +59,9 @@ for n_agent in range(N_AGENTS):
     new_tendon_xml = re.sub(r'joint="', f'joint="{n_agent}_', tendon_match)
     new_tendon_xml = re.sub(r'name="', f'name="{n_agent}_', new_tendon_xml)
 
-
     big_xml_string += new_agent_xml
     big_actuator_xml += new_actuator_xml
-    big_tendon_xml += new_tendon_xml
-    
+    big_tendon_xml += new_tendon_xml   
 
 xml_content = MODEL_XML.replace("BODIES_", big_xml_string)
 xml_content = xml_content.replace("ACTUATORS_", big_actuator_xml)
@@ -76,12 +75,14 @@ with open("tmp.xml", "w") as f:
 model = mujoco.MjModel.from_xml_string(xml_content)
 data = mujoco.MjData(model)
 
-model = SAC.load("humanoid-v5-sac-simple")
 
-env_name='RacingHumanoids-v5'
-import customHumEnv
+model = SAC.load(env)
+# capitalize first letter:
+env_name = f'Racing{env.capitalize()}s-v5'
 tmp_path = os.path.join(os.getcwd(), 'tmp.xml')
+
 env = gym.make(env_name, n_agents=N_AGENTS, xml_file=tmp_path, render_mode='human')
+
 # exit()
 agents = [model for _ in range(N_AGENTS)]
 obs, info = env.reset()
@@ -97,4 +98,3 @@ for _ in range(10000):
     action = np.concatenate(actions)
     obs, reward, term, trunc, info = env.step(action)
     env.render()
-    
