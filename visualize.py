@@ -11,9 +11,13 @@ env='humanoid'
 #path = f"/Users/jacobadamczyk/miniconda3/envs/rlenv10/lib/python3.10/site-packages/gymnasium/envs/mujoco/assets/{env}.xml"
 # get conda env path
 import os
-# path = os.path.join(os.environ['CONDA_PREFIX'], 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
-path = os.path.join(os.environ['CONDA_PREFIX'], 'Lib', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
+# path = os.path.join(os.environ['CONDA_PREFIX'], 'envs', 'rlenv10', 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
+path = os.path.join(os.environ['CONDA_PREFIX'], 'lib', 'python3.10', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
+
+# path = os.path.join(os.environ['CONDA_PREFIX'], 'Lib', 'site-packages', 'gymnasium', 'envs', 'mujoco', 'assets', f'{env}.xml')
 path = os.path.abspath(path)
+import sys
+# sys.path.append('/')
 
 with open(path, "r") as f:
     xml_content = f.read()
@@ -26,7 +30,11 @@ xml = re.sub(r'<geom.*?floor.*?geom>', '', xml)
 # get the actuator:
 actuator_match = re.search(r"<actuator(.*)>(.*)</actuator>", xml_content, re.DOTALL).group(0).replace('<actuator>', '').replace('</actuator>', '')
 big_actuator_xml = ""
-tendon_match = re.search(r"<tendon(.*)>(.*)</tendon>", xml_content, re.DOTALL).group(0).replace('<tendon>', '').replace('</tendon>', '')
+tendon_matcher = re.search(r"<tendon(.*)>(.*)</tendon>", xml_content, re.DOTALL)
+if tendon_matcher is not None:
+    tendon_match = tendon_matcher.group(0).replace('<tendon>', '').replace('</tendon>', '')
+else:
+    tendon_match = ""
 big_tendon_xml = ""
 
 N_AGENTS = 2
@@ -42,6 +50,7 @@ colors = [
 for n_agent in range(N_AGENTS):
     # copy humanoid geometry, actuators, and tendons N_AGENTS times:
     new_agent_xml = re.sub(r'name="', f'name="{n_agent}_', xml)
+    
     # properly replace unique geom tags using same sub logic:
     
     new_agent_xml = re.sub(r'<geom', 
@@ -83,16 +92,21 @@ env_name='RaceingHumanoids-v5'
 #xml_path='/Users/jacobadamczyk/Documents/Github/raceRL/tmp.xml'
 import customHumEnv
 tmp_path = os.path.join(os.getcwd(), 'tmp.xml')
-env = gym.make(env_name, n_agents=2, xml_file=tmp_path, render_mode='human')
+env = gym.make(env_name, n_agents=N_AGENTS, xml_file=tmp_path, render_mode='human')
 # exit()
-
+agents = [model, model2]
 obs, info = env.reset()
-
+obs_len = obs.shape[0]
 for _ in range(10000):
     # normal rl rendering / steps:
-    action = model.predict(obs[:len(obs)//N_AGENTS], deterministic=True)[0]
-    action2 = model2.predict(obs[len(obs)//N_AGENTS:], deterministic=True)[0]
-    action = np.concatenate([action, action2])
+    # combine actions from each agent:
+    actions = []
+    # for n_agent, agent in enumerate(agents):
+    #     # action, _ = agent.predict(obs[n_agent*obs_len//N_AGENTS:(n_agent+1)*obs_len//N_AGENTS])
+        # actions.append(action)
+    action = env.action_space.sample()
+
+    # action = np.concatenate(actions)
     obs, reward, term, trunc, info = env.step(action)
     env.render()
     
