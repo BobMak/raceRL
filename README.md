@@ -8,3 +8,4 @@ select two agents. Watch them go
 - [ ] motorsports-like camera position
 - [ ] Double check which env xml's need v5 appended (in mujoco assets, some envs have up-to-date xmls, some don't)
 - [ ] Fix swimmers
+- [ ] Make colors unique for each algo
