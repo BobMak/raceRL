@@ -46,7 +46,7 @@ else:
 big_tendon_xml = ""
 
 N_AGENTS = 2
-N_REPLICAS = 1
+N_REPLICAS = 2
 # use an mpl color cycle to color the agents:
 colors = rgba_color_list(N_AGENTS*N_REPLICAS)
 # colors = [
