@@ -46,17 +46,17 @@ else:
 big_tendon_xml = ""
 
 N_AGENTS = 2
-N_REPLICAS = 2
+N_REPLICAS = 5
 # use an mpl color cycle to color the agents:
-colors = rgba_color_list(N_AGENTS*N_REPLICAS)
+colors = rgba_color_list(N_AGENTS)
 # colors = [
 #     "1 0 0 1",
 #     "0 1 0 1",
 # ][:N_AGENTS]
-
-# colors = [color for _ in range(N_REPLICAS) for color in colors]
-# overwrite the first color as red:
 colors[0] = "0 1 0 1"
+
+colors = [color for _ in range(N_REPLICAS) for color in colors]
+# overwrite the first color as red:
 
 for n_agent in range(N_AGENTS*N_REPLICAS):
     # copy humanoid geometry, actuators, and tendons N_AGENTS times:
