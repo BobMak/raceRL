@@ -85,6 +85,30 @@ class RacingHumanoidsEnv(HumanoidEnv):
             all.append(a)
         return np.concatenate(all)
     
+    def step(self, *args):
+        ret = super().step(*args)
+        # update the camera position
+        # get the furthermost x position
+        # pos = self.data.qpos[0:4]
+        cam_dist = self.mujoco_renderer.viewer.cam.distance
+        poss = self.data.xpos.reshape((3,-1))
+        middle_x = poss[1].mean()
+        middle_pos = np.array([middle_x, 0, 0])
+        idx_winner = np.argmax(poss[1])
+        pos = poss[:,idx_winner]
+        # center the camera on the winner
+        self.mujoco_renderer.viewer.cam.lookat = np.array([pos[1], 0, 0])
+        # update the distance to include the losers
+        backagent = np.argmin(poss[1])
+        loser_winner_distance = np.linalg.norm(middle_pos - poss[:,backagent])
+        self.mujoco_renderer.viewer.cam.distance = 4 + loser_winner_distance/1.3
+        # calculate azimuth update to include the losers
+        #deg_diff = np.rad2deg(np.arctan(np.linalg.norm(middle_pos - pos)/cam_dist))
+        # update the azimuth to include the losers
+        #print(deg_diff)
+        #self.mujoco_renderer.viewer.cam.azimuth = 90 + deg_diff
+        return ret
+    
 gymnasium.envs.register(
     id="RacingHumanoids-v5",
     entry_point="customHumEnv:RacingHumanoidsEnv",

@@ -46,7 +46,7 @@ else:
 big_tendon_xml = ""
 
 N_AGENTS = 2
-N_REPLICAS = 5
+N_REPLICAS = 1
 # use an mpl color cycle to color the agents:
 colors = rgba_color_list(N_AGENTS)
 # colors = [
@@ -95,8 +95,8 @@ data = mujoco.MjData(model)
 mj_env = ''
 for fragment in env.split('_'):
     mj_env += fragment.capitalize()
-asac_model = ASAC.load(args=(mj_env+'-v5',), path=f'ASAC_{mj_env}-v5')
-sac_model = SAC.load(env)
+asac_model = ASAC.load(args=(mj_env+'-v5',), path=f'ASAC_{mj_env}-v5', device='cpu')
+sac_model = SAC.load(env+"-v5-sac-expert")
 env_name = f'Racing{mj_env}s-v5'
 tmp_path = os.path.join(os.getcwd(), 'tmp.xml')
 
@@ -125,4 +125,4 @@ for _ in range(10000):
     obs, reward, term, trunc, info = env.step(action)
     ep_return += reward
     # env.render()
-    print(ep_return)
+    # print(ep_return)
